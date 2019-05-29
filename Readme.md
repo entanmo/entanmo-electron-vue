@@ -1,52 +1,52 @@
-系统结构：
-采用 express 创建 http-server 提供 http 服务
-利用 jquery 来请求 http 服务， 并在界面显示数据
-采用 electron 来生成界面
+系统结构：  
+采用 express 创建 http-server 提供 http 服务  
+利用 jquery 来请求 http 服务， 并在界面显示数据  
+采用 electron 来生成界面  
 
-依赖的库：
-express
-electron
-electron-forge
-async
+依赖的库：  
+express  
+electron  
+electron-forge  
+async  
 
-主要的文件:
-package.json
-http-server.js
-src/index.js
-src/index-jquery.html
+主要的文件:  
+package.json  
+http-server.js  
+src/index.js  
+src/index-jquery.html  
 
-关键技术难点：
+关键技术难点：  
 
-1. 一些数据获取， 比如说 磁盘空间，显卡类型， 需要调用系统的 shell 命令， 根据不同系统，命令会有差别
-2. 进程的启动和重启，获取状态。 这个是采用了 pm2。 在运行之前， 需要初始化 pm2
-   ETM_HOME/node_modules/pm2/bin/pm2 update
-   ETM_HOME/node_modules/pm2/bin/pm2 start ETM_HOME/app.js --name entanmo
+1. 一些数据获取， 比如说 磁盘空间，显卡类型， 需要调用系统的 shell 命令， 根据不同系统，命令会有差别  
+2. 进程的启动和重启，获取状态。 这个是采用了 pm2。 在运行之前， 需要初始化 pm2  
+   ETM_HOME/node_modules/pm2/bin/pm2 update  
+   ETM_HOME/node_modules/pm2/bin/pm2 start ETM_HOME/app.js --name entanmo  
 
-    为了简化， 在运行前， 需要设置环境变量 ETM_HOME
+    为了简化， 在运行前， 需要设置环境变量 ETM_HOME  
 
-3. 获取本地 delegate 出快情况
-   加载 ETM_HOME/config/config.json， 然后获取里边的 secret， 利用 async.parallel 请求获取出快状态，最后返回
-4. 显卡出快检查
-   由于自己的电脑显卡没法通过检查， 索引我写了两个虚拟的函数 mintSetup 和 mint， 生产环境时替换成 node-pow-addon 里边的就可以了。 mint_test 这个函数，会调用 mint，并将结果统计
+3. 获取本地 delegate 出快情况  
+   加载 ETM_HOME/config/config.json， 然后获取里边的 secret， 利用 async.parallel 请求获取出快状态，最后返回  
+4. 显卡出快检查  
+   由于自己的电脑显卡没法通过检查， 索引我写了两个虚拟的函数 mintSetup 和 mint， 生产环境时替换成 node-pow-addon 里边的就可以了。 mint_test 这个函数，会调用 mint，并将结果统计  
 
-启动前准备工作：
+启动前准备工作：  
 
-1.  npm install
-    npm install electron -g
-    npm install express -g
-    npm install electron-forge -g
-    2.  设置环境变量 ETM_HOME， 指向 ETM 的源代码路径
-    3.  ETM_HOME/node_modules/pm2/bin/pm2 update
-    4.  ETM_HOME/node_modules/pm2/bin/pm2 start ETM_HOME/app.js --name entanmo
-    5.  electron-forge start (这个会同时启动 http-server 和 界面程序)
+1.  npm install  
+    npm install electron -g  
+    npm install express -g  
+    npm install electron-forge -g  
+    2.  设置环境变量 ETM_HOME， 指向 ETM 的源代码路径  
+    3.  ETM_HOME/node_modules/pm2/bin/pm2 update  
+    4.  ETM_HOME/node_modules/pm2/bin/pm2 start ETM_HOME/app.js --name entanmo  
+    5.  electron-forge start (这个会同时启动 http-server 和 界面程序)  
 
-文件说明：
+文件说明：  
 
-1.  http-server.js
-    这个文件是服务文件， 所有的服务都在这一个文件里边， 不依赖其他的源代码文件
+1.  http-server.js  
+    这个文件是服务文件， 所有的服务都在这一个文件里边， 不依赖其他的源代码文件  
 
 
-    包含的接口：
+    包含的接口：  
     1.1 获取本地网口状态
     url ：/api/system/networkInterfaces
     返回   [{"interface":"en0","address":"10.234.22.104"}]
