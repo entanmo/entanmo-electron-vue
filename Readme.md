@@ -47,118 +47,119 @@ src/index-jquery.html
 
 
     包含的接口：  
-    1.1 获取本地网口状态
+    1.1 获取本地网口状态  
     url ：/api/system/networkInterfaces
-    返回   [{"interface":"en0","address":"10.234.22.104"}]
-
-    1.2 获取本地区块链同步状态
-    url: /api/system/syncState
-    返回
-    {
-    	"success": true,
-    	"code": 0,
-    	"data": {
-    		"height": 15051,
-    		"syncing": false,
-    		"blocks": 0
-    	}
-    }
-
-    1.3 获取显卡状态
-    url: /api/system/display
-    返回
-    {
-    	"success": true,
-    	"code": 0,
-    	"data": {
-    		"Chipset Model": "Intel Iris",
-    		"VRAM (Dynamic, Max)": "1536 MB",
-    		"Vendor": "Intel",
-    		"Display Type": "Built-In Retina LCD",
-    		"Resolution": "2560 x 1600 Retina"
-    	}
-    }
-
-    1.4 启动区块链进程
-    url: /api/process/start
-    {
-    	"success": true,
-    	"code": 0,
-    	"out": "",
-    	"err": ""
-    }
-
-    1.5 停止区块链进程
-    url: /api/process/stop
-    {
-    	"success": true,
-    	"code": 0,
-    	"out": "",
-    	"err": ""
-    }
-
-    1.6 获取进程状态
-    url: /api/process/status
-    {
-    	"success": true,
-    	"code": 0,
-    	"data": {
-    		"status": "online",
-    		"version": "1.3.6",
-    		"uptime":  "100s",
-    		"script path" :"/Users/zhengkaihua/workspace/entanmo/etm/app.js",
-    		"node.js version": "8.4.0",
-    		"unstable restarts": "0"
-    	}
-    }
-
-    1.7 本区块链出快状态
-    url: /api/chain/forgeStatus
-    {
-    	"success": true,
-    	"code": 0,
-    	"data": [{
-    		"username": "asch_g5",
-    		"address": "5277565260144300464",
-    		"balance": 532,
-    		"producedblocks": 154,
-    		"missedblocks": 3,
-    		"productivity": 98.09,
-    		"rewards": 532,
-    		"forged": 532
-    	}]
-    }
-
-    1.8 磁盘使用情况
-    url: /api/process/du
-    {
-    	"success": true,
-    	"code": 0,
-    	"data": "319M"
-    }
-
-    1.9 显卡测试
-    url: /api/system/forgeTest
-    {
-    	"success": true,
-    	"code": 0,
-    	"data": {
-    		"support": true,
-    		"hasError": false,
-    		"times": 5,
-    		"passed": 5,
-    		"totalCost": 2330
-    	}
-    }
-
-    1.10 查看日志
-    url: /api/process/logs
-
-    2.  src/index.js
+    返回   [{"interface":"en0","address":"10.234.22.104"}]  
+  
+    1.2 获取本地区块链同步状态  
+    url: /api/system/syncState  
+    返回  
+    {  
+        "success": true,  
+        "code": 0,  
+        "data": {  
+            "height": 15051,  
+            "syncing": false,  
+            "blocks": 0  
+        }  
+    }  
+  
+    1.3 获取显卡状态  
+    url: /api/system/display  
+    返回  
+    {  
+        "success": true,  
+        "code": 0,  
+        "data": {  
+            "Chipset Model": "Intel Iris",  
+            "VRAM (Dynamic, Max)": "1536 MB",  
+            "Vendor": "Intel",  
+            "Display Type": "Built-In Retina LCD",  
+            "Resolution": "2560 x 1600 Retina"  
+        }  
+    }  
+    
+    1.4 启动区块链进程  
+    url: /api/process/start  
+    {  
+        "success": true,  
+        "code": 0,  
+        "out": "",  
+        "err": ""  
+    }  
+    
+    1.5 停止区块链进程  
+    url: /api/process/stop  
+    {  
+        "success": true,  
+        "code": 0,  
+        "out": "",  
+        "err": ""  
+    }  
+    
+    1.6 获取进程状态  
+    url: /api/process/status  
+    {  
+        "success": true,  
+        "code": 0,  
+        "data": {  
+            "status": "online",  
+            "version": "1.3.6",  
+            "uptime":  "100s",  
+            "script path" :"/Users/zhengkaihua/workspace/entanmo/etm/app.js",  
+            "node.js version": "8.4.0",  
+            "unstable restarts": "0"  
+        }  
+    }  
+    
+    1.7 本区块链出快状态  
+    url: /api/chain/forgeStatus  
+    {  
+        "success": true,  
+        "code": 0,  
+        "data": [{  
+            "username": "asch_g5",  
+            "address": "5277565260144300464",  
+            "balance": 532,  
+            "producedblocks": 154,  
+            "missedblocks": 3,  
+            "productivity": 98.09,  
+            "rewards": 532,  
+            "forged": 532  
+        }]  
+    }  
+    
+    1.8 磁盘使用情况  
+    url: /api/process/du  
+    {  
+        "success": true,  
+        "code": 0,  
+        "data": "319M"  
+    }  
+    
+    1.9 显卡测试  
+    url: /api/system/forgeTest  
+    {  
+        "success": true,  
+        "code": 0,  
+        "data": {  
+            "support": true,  
+            "hasError": false,  
+            "times": 5,  
+            "passed": 5,  
+            "totalCost": 2330  
+        }  
+    }  
+  
+    1.10 查看日志  
+    url: /api/process/logs  
+  
+    2.  src/index.js  
     这个是用 electron-forge 的 vue 模块生产的文件, 我只是把里边加载的 index.html 换成了index-jquery.html， 并添加了一句
-    webPreferences: {
-      nodeIntegration: false
-    }， 以便支持 jquery 库的加载
-
-    3.  src/index-jquery.html
-      这个文件，主要是使用 jquery， 来异步调用http 接口， 并修改页面内容
+    webPreferences: {  
+      nodeIntegration: false  
+    }， 以便支持 jquery 库的加载  
+    
+    3.  src/index-jquery.html  
+      这个文件，主要是使用 jquery， 来异步调用http 接口， 并修改页面内容  
+  
