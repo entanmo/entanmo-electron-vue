@@ -1,24 +1,72 @@
-import { app, BrowserWindow } from 'electron';
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import { enableLiveReload } from 'electron-compile';
+import {
+  app,
+  BrowserWindow
+} from 'electron';
+import installExtension, {
+  VUEJS_DEVTOOLS
+} from 'electron-devtools-installer';
+import {
+  enableLiveReload
+} from 'electron-compile';
+import {
+  spawn
+} from 'child_process'
+
+function launch(args) {
+  var child = spawn(process.execPath, args);
+
+  child.stdout.pipe(process.stdout, {
+    end: false
+  });
+  child.stderr.pipe(process.stderr, {
+    end: false
+  });
+
+  return child;
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-
+let serverPid;
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
 if (isDevMode) enableLiveReload();
 
 const createWindow = async () => {
   // Create the browser window.
+
+  var proc = launch([__dirname + "/../http-server.js"])
+  serverPid = proc.pid
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    webPreferences: {
+      nodeIntegration: false
+    }
   });
 
+  //var networkAddresses = util.get
+
+
+  // util.get_pub_ip(function (err, data) {
+  //   if (err) {
+  //     console.log(err)
+  //   } else {
+  //     global.sharedObject = {
+  //       pubIp: '192.168.10.1',
+  //       address: data
+  //     }
+  //   }
+  // })
+
+
+
+
+
+
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadURL(`file://${__dirname}/index-jquery.html`);
 
   // Open the DevTools.
   if (isDevMode) {
@@ -45,6 +93,7 @@ app.on('window-all-closed', () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
+    process.kill(serverPid, "kill")
     app.quit();
   }
 });

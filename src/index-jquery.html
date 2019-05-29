@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+  </script>
+</head>
+
+<body>
+  <div>
+    <h3>网络基本信息</h3>
+    <div id="networkState"></div>
+    <div>公网信息 <span id="netInfo">正在查询中</span></div>
+    <div>网络接口
+      <div id="networkInterfaces"></div>
+    </div>
+    <div><b>显卡和gpu</b>
+      <div id="gpu">查询中</div>
+      <div id="gpuTest">检测中</div>
+    </div>
+    <hr>
+  </div>
+  <div>
+    <h3>本区块链信息 <button id="btnRefresh">刷新</button> </h3>
+    <div>同步状态: <span id="syncState">查询中</span></div>
+    <div>磁盘占用: <span id="diskUsage">查询中</span></div>
+    <div> <button id="btnStart">启动</button> <button id="btnStop">停止</button>
+      <div>状态 ：<span id='processStatus'>正在查询中</span> &nbsp;&nbsp;创建时间：<span id='launchTime'>正在查询中</span></div>
+      <div>版本 ：<span id='processVersion'>正在查询中</span></div>
+      <div>程序目录 ：<span id='workDirectory'>正在查询中</span></div>
+    </div>
+    <hr>
+    <div>区块生产情况
+      <div id='forgeStatus'>正在查询中</div>
+    </div>
+    <hr>
+    <div>区块链状态
+      <div>高度 ：<span id='chainHeight'>正在查询中</span></div>
+      <div>总量 ：<span id='supply'>正在查询中</span></div>
+      <div>出快奖励 ：<span id='reward'>正在查询中</span></div>
+    </div>
+    <hr>
+  </div>
+</body>
+<script>
+  $(document).ready(function () {
+
+    $.get("http://ip-api.com/json/", function (data, status) {
+      if (status == 'success') {
+        console.log(JSON.stringify(data))
+        var jsonObj = data //JSON.parse(data)
+        var regionName = jsonObj['regionName'];
+        var country = jsonObj['country']
+        var isp = jsonObj["isp"]
+        $("#netInfo").html(country + " " + regionName + "," + isp + ", ip: " + jsonObj['query']);
+        $("#networkState").html("网络正常")
+      } else {
+        $("#test").html("获取服务商信息失败");
+      }
+
+    });
+    $.get("http://localhost:8081/api/system/networkInterfaces", function (data, status) {
+      if (status == 'success') {
+        // var line = "";
+        // console.log(JSON.stringify(data))
+        var idx = 0
+        var line = ''
+        for (idx in data) {
+          line = line + "<div><div style='float:left;width:150px;'>网口: " + data[idx]['interface'] +
+            " </div><span>ip：" + data[
+              idx][
+              'address'
+            ] +
+            '</span></div>';
+        }
+        $("#networkInterfaces").html(line)
+      } else {
+        $("#networkInterfaces").html("获取失败")
+      }
+    });
+
+    $.get("http://localhost:8081/api/system/display", function (data, status) {
+      if (status == 'success') {
+        // var line = "";
+        // console.log(JSON.stringify(data))
+        // data.data['Bus']
+        var msg = data.data['Chipset Model'] + ' ' +
+          data.data['Display Type'] + ' ' +
+          data.data['Resolution']
+        $("#gpu").html(msg)
+      } else {
+        $("#gpu").html("获取失败")
+      }
+    });
+
+    $.get("http://localhost:8081/api/system/forgeTest", function (data, status) {
+      if (status == 'success') {
+        // var line = "";
+        // console.log(JSON.stringify(data))
+        // data.data['Bus']
+        var msg = ""
+        if (data.data['support']) {
+          msg = "<b>支持挖矿</b>" + ", 测试 " + data.data['times'] + "次, 通过" + data.data['passed'] +
+            "次, 耗时" + data.data['totalCost'] / 1000.0 + " 秒"
+        } else {
+          msg = "<b>警告: 显卡不支持挖矿!!!<b>"
+        }
+        $("#gpuTest").html(msg)
+      } else {
+        $("#gpuTest").html("显卡测试失败")
+      }
+    });
+
+    getProcessStatus();
+    getForgeStatus();
+    getDiskUsage()
+    getSyncState()
+    $("#btnRefresh").click(function () {
+      console.log("refresh clicked")
+      getProcessStatus();
+    });
+
+    $("#btnStart").click(function () {
+      console.log("start clicked")
+      startProcess();
+    });
+
+    $("#btnStop").click(function () {
+      console.log("stop clicked")
+      stopProcess();
+    });
+
+    $.get("https://api.entanmo.com/api/blocks/getStatus", function (data, status) {
+      if (status == 'success' && data['success'] == true) {
+        $("#chainHeight").html(data['height'])
+        $("#supply").html(data['supply'] / 100000000 + " ETM")
+        $("#reward").html(data['reward'] / 100000000 + " ETM")
+        $("#networkState").html("连接主链正常")
+      } else {
+        $("#chainHeight").html("获取失败")
+        $("#supply").html("获取失败")
+        $("#reward").html("获取失败")
+      }
+    });
+
+    setInterval(function () {
+      getForgeStatus()
+      getProcessStatus()
+      getDiskUsage()
+      getSyncState()
+    }, 10000)
+  })
+
+  function stopProcess() {
+    $.get("http://localhost:8081/api/process/stop", function (data, status) {
+      if (status == 'success') {
+        //var line = "";
+        // console.log(JSON.stringify(data))
+        if (data.success == true && data.code == 0) {
+          alert('停止成功')
+          getProcessStatus()
+        }
+      } else {
+        alert('停止进程失败')
+      }
+    })
+  }
+
+  function startProcess() {
+    $.get("http://localhost:8081/api/process/start", function (data, status) {
+      if (status == 'success') {
+        //var line = "";
+        // console.log(JSON.stringify(data))
+        if (data.success == true && data.code == 0) {
+          alert('启动成功')
+          getProcessStatus()
+        }
+      } else {
+        alert('启动失败')
+      }
+    })
+  }
+
+  function getSyncState() {
+    $.get("http://localhost:8081/api/system/syncState", function (data, status) {
+      if (status == 'success') {
+        //var line = "";
+        // console.log(JSON.stringify(data))
+        if (data.success == true && data.code == 0) {
+          //alert('启动成功')
+          //getProcessStatus()
+          var syncing = data.data['syncing'] ? "正在同步" : "已同步"
+          var height = data.data['height']
+          var blocks = data.data['blocks']
+          //console.log(JSON.stringify(data.data))
+          var msg = syncing + "，未同步区块: " + blocks + ", 链高度: " + height
+          $("#syncState").html(msg)
+        }
+      } else {
+        //console.log('查询同步状态失败')
+        $("#syncState").html('查询同步状态失败')
+      }
+    })
+  }
+
+  function getDiskUsage() {
+    $.get("http://localhost:8081/api/process/du", function (data, status) {
+      if (status == 'success') {
+        //var line = "";
+        // console.log(JSON.stringify(data))
+        if (data.success == true && data.code == 0) {
+          //alert('启动成功')
+          //getProcessStatus()
+          //console.log("Disk usage: " + data.data)
+          $("#diskUsage").html(data.data)
+        }
+      } else {
+        //alert('启动失败')
+        //console.log('获取磁盘使用空间失败')
+        $("#diskUsage").html('获取磁盘使用空间失败')
+      }
+    })
+  }
+
+  function getForgeStatus() {
+    $.get("http://localhost:8081/api/chain/forgeStatus", function (data, status) {
+      if (status == 'success') {
+        //var line = "";
+        console.log(JSON.stringify(data))
+        if (data.success == true && data.code == 0) {
+
+          var idx = 0
+          var line = ''
+          for (idx in data.data) {
+            line = line + "<div><div style='float:left;width:80px;'>" + data.data[idx]['username'] +
+              " </div><span>生产：" + data.data[
+                idx]['producedblocks'] + ", 丢失: " + data.data[
+                idx]['missedblocks'] + ", 奖励: " + data.data[
+                idx]['rewards'] + ", 余额: " + data.data[
+                idx]['balance']
+            '</span></div>';
+          }
+          // alert('启动成功')
+          // getProcessStatus()
+          $("#forgeStatus").html(line)
+        }
+      } else {
+        alert('获取出快信息失败')
+      }
+    })
+  }
+
+  function getProcessStatus() {
+    $.get("http://localhost:8081/api/process/status", function (data, status) {
+      if (status == 'success') {
+        //var line = "";
+        //console.log(JSON.stringify(data))
+        if (data.success == true && data.code == 0) {
+          if (data.data.status == 'online') {
+            $("#processStatus").html("运行中, 运行时间： " + data.data['uptime'].replace('m', '分钟').replace('h',
+              '小时').replace('s', '秒'))
+
+            $("#btnStart").attr('disabled', true);
+            $("#btnStop").attr('disabled', false);
+          } else {
+            $("#processStatus").html("已经停止")
+            $("#btnStart").attr('disabled', false);
+            $("#btnStop").attr('disabled', true);
+          }
+          $("#launchTime").html(data.data['created at'])
+          $("#processVersion").html("ETM 版本:" + data.data['version'] + ", Node 版本:" + data.data[
+            'node.js version'])
+          $("#workDirectory").html(data.data['script path'])
+        }
+
+
+      } else {
+        $("#runStatus").html("获取失败")
+      }
+    });
+  }
+</script>
+
+</html>
