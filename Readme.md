@@ -1,19 +1,19 @@
 系统结构：  
-采用 express 创建 http-server 提供 http 服务  
-利用 jquery 来请求 http 服务， 并在界面显示数据  
-采用 electron 来生成界面  
+  采用 express 创建 http-server 提供 http 服务  
+  利用 jquery 来请求 http 服务， 并在界面显示数据  
+  采用 electron 来生成界面  
 
 依赖的库：  
-express  
-electron  
-electron-forge  
-async  
+  express  
+  electron  
+  electron-forge  
+  async  
 
 主要的文件:  
-package.json  
-http-server.js  
-src/index.js  
-src/index-jquery.html  
+  package.json  
+  http-server.js  
+  src/index.js  
+  src/index-jquery.html  
 
 关键技术难点：  
 
